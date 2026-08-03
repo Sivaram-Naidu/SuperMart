@@ -1,6 +1,7 @@
 import pandas as pd
 from apyori import apriori
 from collections import defaultdict
+
 DATASET_PATH = 'data/Market_Basket_Optimisation.csv'
 
 # =========================================================
