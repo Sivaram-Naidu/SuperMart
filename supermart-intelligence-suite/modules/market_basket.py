@@ -1,5 +1,15 @@
+from training.train_apriori import train_apriori
+from training.train_eclat import train_eclat
+
 from models.market_basket.apriori_model import apriori_recommend
 from models.market_basket.eclat_model import eclat_recommend
+
+# =========================================================
+# Build indexes once at startup
+# =========================================================
+
+train_apriori()
+train_eclat()
 
 # =========================================================
 # Main recommendation API
@@ -15,7 +25,6 @@ def get_recommendations(item, algorithm='apriori', top_n=5):
 
     else:
         raise ValueError("Algorithm must be 'apriori' or 'eclat'")
-
 
 # =========================================================
 # Console test
