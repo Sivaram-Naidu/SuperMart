@@ -1,75 +1,62 @@
 import pandas as pd
+import pickle
 from apyori import apriori
 from collections import defaultdict
 
-from models.market_basket.apriori_index import APRIORI_INDEX
+# Load dataset
+dataset = pd.read_csv('data/Market_Basket_Optimisation.csv', header=None)
 
-DATASET_PATH = 'data/Market_Basket_Optimisation.csv'
+transactions = []
 
-# =========================================================
-# Build Apriori index
-# =========================================================
+for i in range(len(dataset)):
+    transaction = [
+        str(item).strip().lower()
+        for item in dataset.iloc[i].dropna().tolist()
+    ]
 
-def train_apriori():
+    if transaction:
+        transactions.append(transaction)
 
-    dataset = pd.read_csv(DATASET_PATH, header=None)
+# Run Apriori
+rules = apriori(
+    transactions=transactions,
+    min_support=0.003,
+    min_confidence=0.2,
+    min_lift=1.5,
+    min_length=2,
+    max_length=2
+)
 
-    transactions = []
+apriori_index = defaultdict(list)
 
-    for i in range(len(dataset)):
+for result in list(rules):
 
-        transaction = [
-            str(item).strip().lower()
-            for item in dataset.iloc[i].dropna().tolist()
-        ]
+    support = result.support
 
-        if transaction:
-            transactions.append(transaction)
+    for rule in result.ordered_statistics:
 
-    rules = apriori(
-        transactions=transactions,
-        min_support=0.003,
-        min_confidence=0.2,
-        min_lift=1.5,
-        min_length=2,
-        max_length=2
+        lhs = tuple(rule.items_base)
+        rhs = tuple(rule.items_add)
+
+        if len(lhs) == 1 and len(rhs) == 1:
+
+            apriori_index[lhs[0]].append({
+                'product': rhs[0],
+                'support': support,
+                'confidence': rule.confidence,
+                'lift': rule.lift
+            })
+
+# Sort by lift
+for item in apriori_index:
+    apriori_index[item] = sorted(
+        apriori_index[item],
+        key=lambda x: x['lift'],
+        reverse=True
     )
 
-    APRIORI_INDEX.clear()
+# Save pickle file
+with open('models/market_basket/apriori_index.pkl', 'wb') as f:
+    pickle.dump(dict(apriori_index), f)
 
-    temp_index = defaultdict(list)
-
-    for result in list(rules):
-
-        support = result.support
-
-        for rule in result.ordered_statistics:
-
-            lhs = tuple(rule.items_base)
-            rhs = tuple(rule.items_add)
-
-            if len(lhs) == 1 and len(rhs) == 1:
-
-                temp_index[lhs[0]].append({
-                    'product': rhs[0],
-                    'support': support,
-                    'confidence': rule.confidence,
-                    'lift': rule.lift
-                })
-
-    for item in temp_index:
-
-        APRIORI_INDEX[item] = sorted(
-            temp_index[item],
-            key=lambda x: x['lift'],
-            reverse=True
-        )
-
-    print('Apriori index built successfully')
-
-# =========================================================
-# Run directly
-# =========================================================
-
-if __name__ == '__main__':
-    train_apriori()
+print(' Created: models/market_basket/apriori_index.pkl')
