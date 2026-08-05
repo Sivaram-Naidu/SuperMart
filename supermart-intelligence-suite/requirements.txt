@@ -6,4 +6,9 @@ matplotlib
 nltk
 mlxtend
 apyori
+pip
 joblib
+pillow
+plotly
+tensorflow
+pickle
