@@ -1,1 +1,0 @@
-APRIORI_INDEX = {}

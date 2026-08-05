@@ -1,26 +1,37 @@
 import pandas as pd
-import models.market_basket.eclat_index as eclat_data
+import pickle
+from collections import Counter
 
 # =========================================================
-# Recommendation function
+# LOAD PRETRAINED ECLAT INDEX
+# =========================================================
+
+with open('models/market_basket/eclat_index.pkl', 'rb') as f:
+    data = pickle.load(f)
+
+ECLAT_INDEX = data['index']
+TOTAL_TRANSACTIONS = data['total_transactions']
+
+# =========================================================
+# ECLAT RECOMMENDATION FUNCTION
 # =========================================================
 
 def eclat_recommend(item, top_n=5):
 
     item = item.lower().strip()
 
-    if item not in eclat_data.ECLAT_INDEX:
+    if item not in ECLAT_INDEX:
         return pd.DataFrame()
 
-    total = sum(eclat_data.ECLAT_INDEX[item].values())
+    total = sum(ECLAT_INDEX[item].values())
 
     rows = []
 
-    for other, count in eclat_data.ECLAT_INDEX[item].most_common(top_n):
+    for other, count in Counter(ECLAT_INDEX[item]).most_common(top_n):
 
         rows.append([
             other,
-            round(count / eclat_data.TOTAL_TRANSACTIONS, 4),
+            round(count / TOTAL_TRANSACTIONS, 4),
             round(count / total, 4)
         ])
 

@@ -1,8 +1,15 @@
 import pandas as pd
-from models.market_basket.apriori_index import APRIORI_INDEX
+import pickle
 
 # =========================================================
-# Recommendation function
+# LOAD PRETRAINED APRIORI INDEX
+# =========================================================
+
+with open('models/market_basket/apriori_index.pkl', 'rb') as f:
+    APRIORI_INDEX = pickle.load(f)
+
+# =========================================================
+# APRIORI RECOMMENDATION FUNCTION
 # =========================================================
 
 def apriori_recommend(item, top_n=5):
