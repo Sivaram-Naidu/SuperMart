@@ -34,7 +34,7 @@ def _render_placeholder(title: str, description: str) -> None:
 
 def main() -> None:
 	st.set_page_config(page_title="SuperMart Intelligence Suite", page_icon="🛒", layout="wide", initial_sidebar_state="expanded")
-	# _load_css()
+	_load_css()
 
 	requested_page = st.query_params.get("page", "home")
 	if requested_page in {"home", "deep_learning", "churn", "segmentation", "basket", "ads", "sentiment"}:
