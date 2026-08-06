@@ -9,4 +9,4 @@ apyori
 joblib
 pillow
 plotly
-tensorflow==2.18.0
+tensorflow
