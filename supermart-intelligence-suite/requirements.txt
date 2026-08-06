@@ -9,4 +9,4 @@ apyori
 joblib
 pillow
 plotly
-
+tensorflow
