@@ -1,52 +1,88 @@
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import math
-import random
-dataset = pd.read_csv("ads CTR optimisation.csv")
-dataset.head()
-dataset.shape
-dataset.isnull().sum()
-N = 10000
-d = 10
+import pickle
+import os
 
-ads_selected = []
-numbers_of_selections = [0] * d
-sums_of_rewards = [0] * d
-total_reward = 0
-for n in range(N):
 
-    ad = 0
-    max_upper_bound = 0
+PICKLE_PATH = "models/ad_optimization/ad_optimization.pkl"
 
-    for i in range(d):
 
-        if numbers_of_selections[i] > 0:
+def load_results():
 
-            average_reward = sums_of_rewards[i] / numbers_of_selections[i]
+    if not os.path.exists(PICKLE_PATH):
 
-            delta_i = math.sqrt((3/2) * math.log(n + 1) / numbers_of_selections[i])
+        raise FileNotFoundError(
 
-            upper_bound = average_reward + delta_i
+            "Run training/train_ad_optimization.py first."
 
-        else:
-            upper_bound = 1e400
+        )
 
-        if upper_bound > max_upper_bound:
-            max_upper_bound = upper_bound
-            ad = i
+    with open(PICKLE_PATH, "rb") as file:
 
-    ads_selected.append(ad)
+        results = pickle.load(file)
 
-    numbers_of_selections[ad] += 1
+    return results
 
-    reward = dataset.values[n, ad]
 
-    sums_of_rewards[ad] += reward
+def get_ucb_results():
 
-    total_reward += reward
-plt.hist(ads_selected)
-plt.title("Ads Selected using UCB")
-plt.xlabel("Advertisement")
-plt.ylabel("Number of Times Selected")
-plt.show()
+    return load_results()["ucb"]
+
+
+def get_thompson_results():
+
+    return load_results()["thompson_sampling"]
+
+
+def get_best_algorithm():
+
+    return load_results()["best_algorithm"]
+
+
+if __name__ == "__main__":
+
+    results = load_results()
+
+    print("\n========== AD OPTIMIZATION ==========\n")
+
+    print("Best Algorithm:")
+
+    print(results["best_algorithm"])
+
+    print()
+
+    print("========== UCB ==========")
+
+    print(
+
+        "Total Reward:",
+
+        results["ucb"]["total_reward"]
+
+    )
+
+    print(
+
+        "Best Advertisement:",
+
+        results["ucb"]["best_ad"]
+
+    )
+
+    print()
+
+    print("===== THOMPSON SAMPLING =====")
+
+    print(
+
+        "Total Reward:",
+
+        results["thompson_sampling"]["total_reward"]
+
+    )
+
+    print(
+
+        "Best Advertisement:",
+
+        results["thompson_sampling"]["best_ad"]
+
+    )
