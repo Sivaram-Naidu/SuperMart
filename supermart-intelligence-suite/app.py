@@ -40,8 +40,6 @@ def main() -> None:
 	if requested_page in {"home", "deep_learning", "churn", "segmentation", "basket", "ads", "sentiment"}:
 		st.session_state["current_page"] = requested_page
 	st.session_state.setdefault("current_page", "home")
-	if st.button("Test Button"):
-    	st.success("Button works!")
 	render_sidebar(st.session_state["current_page"])
 
 	page = st.session_state.get("current_page", "home")
