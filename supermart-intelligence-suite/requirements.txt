@@ -12,3 +12,4 @@ pillow
 plotly
 tensorflow
 pickle
+python-3.11.9
